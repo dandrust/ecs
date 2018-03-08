@@ -1,0 +1,50 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/03/a/RAM64.hdl
+
+/**
+ * Memory of 64 registers, each 16 bit-wide. Out holds the value
+ * stored at the memory location specified by address. If load==1, then 
+ * the in value is loaded into the memory location specified by address 
+ * (the loaded value will be emitted to out from the next time step onward).
+ */
+
+CHIP RAM64 {
+    IN in[16], load, address[6];
+    OUT out[16];
+
+    PARTS:
+    // Register Bank                      
+     RAM8(in=in, load=lain, address=address[0..2], out=raout);
+     RAM8(in=in, load=lbin, address=address[0..2], out=rbout);
+     RAM8(in=in, load=lcin, address=address[0..2], out=rcout);
+     RAM8(in=in, load=ldin, address=address[0..2], out=rdout);
+     RAM8(in=in, load=lein, address=address[0..2], out=reout);
+     RAM8(in=in, load=lfin, address=address[0..2], out=rfout);
+     RAM8(in=in, load=lgin, address=address[0..2], out=rgout);
+     RAM8(in=in, load=lhin, address=address[0..2], out=rhout);
+                                            
+     // Address Logic
+     Mux8Way16(sel=address[3..5], out=out,
+       a=raout,
+       b=rbout,
+       c=rcout,
+       d=rdout,
+       e=reout,
+       f=rfout,
+       g=rgout,
+       h=rhout);
+                                            
+                                            
+     // Load Logic
+     DMux8Way(in=load, sel=address[3..5],
+       a=lain,
+       b=lbin,
+       c=lcin,
+       d=ldin,
+       e=lein,
+       f=lfin,
+       g=lgin,
+       h=lhin);
+     }

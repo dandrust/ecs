@@ -1,0 +1,49 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/03/b/RAM16K.hdl
+
+/**
+ * Memory of 16K registers, each 16 bit-wide. Out holds the value
+ * stored at the memory location specified by address. If load==1, then 
+ * the in value is loaded into the memory location specified by address 
+ * (the loaded value will be emitted to out from the next time step onward).
+ */
+
+CHIP RAM16K {
+    IN in[16], load, address[14];
+    OUT out[16];
+
+    PARTS:
+RAM4K(in=in, load=lain, address=address[0..11], out=raout);
+RAM4K(in=in, load=lbin, address=address[0..11], out=rbout);            
+RAM4K(in=in, load=lcin, address=address[0..11], out=rcout);
+RAM4K(in=in, load=ldin, address=address[0..11], out=rdout);
+//RAM4K(in=in, load=lein, address=address[0..11], out=reout);
+//RAM4K(in=in, load=lfin, address=address[0..11], out=rfout);
+//RAM4K(in=in, load=lgin, address=address[0..11], out=rgout);
+//RAM4K(in=in, load=lhin, address=address[0..11], out=rhout);
+                                       
+// Address Logic
+Mux4Way16(sel=address[12..13], out=out,
+  a=raout,
+  b=rbout,
+  c=rcout,
+  d=rdout);
+ //e=reout,
+ //f=rfout,
+ //g=rgout,
+ //h=rhout);
+                                       
+                                       
+// Load Logic
+DMux4Way(in=load, sel=address[12..13],
+  a=lain,
+  b=lbin,
+  c=lcin,
+  d=ldin);
+ //e=lein,
+ //f=lfin,
+ //g=lgin,
+ //h=lhin);
+}
