@@ -1,4 +1,5 @@
 module Code
+
  def to_ml
     case @type
     when :label
@@ -9,6 +10,8 @@ module Code
       translate_command
     end
   end
+
+  private
 
   def translate_address
     sprintf '%016b', @address
@@ -106,4 +109,5 @@ module Code
   def get_register
     @comp.include?('M') ? 'M' : 'A'
   end
+
 end
