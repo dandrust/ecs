@@ -38,12 +38,17 @@ class Sym
   #
   # You must also write support for predefined symbols, too!
   # @type {:instruction, :data}
-  def initialize name, type
+  def initialize name, type, address=nil, options={}
     @name = name
     @type = type
-    if predefined?
-      @type = :data
-      @address = PREDEFINED_KEYS[@name]
+    if type == :data
+      if predefined?
+        @address = PREDEFINED_SYMBOLS[@name]
+      else
+        @address = next_address if options[:assign_address]
+      end
+    else
+      @address = address
     end
     add_to_table!
   end
@@ -52,9 +57,13 @@ class Sym
     @@table.merge! :"#{self.name}" => self
   end
   
-  def self.for name, type = :instruction
-    return @@table[name.to_sym] ||
-      new(name, type)
+  def self.for! name, type, address=nil
+    self.for name, type, address, assign_address: true
+  end
+
+  def self.for name, type, address=nil, options={}
+    @@table[name.to_sym] ||
+      new(name, type, address, options)
   end
 
   def predefined?

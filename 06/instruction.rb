@@ -5,14 +5,19 @@ class Instruction
 
   include Code
 
+  @@current_address = 0
+
   attr_reader :type, :symbol, :address, :comp, :dest, :jump, :string
   # @type may be:
-  #   :address
-  #   :comment
+  #   :address (begins with @)
+  #   :comment (begins wil //)
+  #   :label   (surrounded by parenthesis)
   #   :command
-  #   :label
   #
-  # @symbol is not implemented
+  # @symbol is the Sym class representing a label
+  #   or variable in the code. If the hack-language
+  #   instruction includes a symbol, @symbol will
+  #   be preset
   #
   # @address is populated when @type is :address
   #   16-bit reference to memory address
@@ -35,7 +40,8 @@ class Instruction
 
   def initialize string
     @string = sanitize string
-    get_type
+    set_type
+    next_address!
   end
 
   def to_s
@@ -46,29 +52,43 @@ class Instruction
     ![:comment, :label].include? @type
   end
 
-  def get_type
-    # @R0, @INFINITE_LOOP
-    if @string[0] == "@"
-      address = @string.slice 1..-1
-    # if @string[1].is_a? letter; it's a symbol
-      # if address.to_i == 0 and address != "0"
-      #   @type = :label
-      #   @label = Sym.new address
-      #   
-    # # It's a number, we're dealing with a direct address
-      # else
-        @type = :address
+  private
+
+  def set_type
+    if @string=~ /^@/
+      @type = :address
+      address = @string.match(/^@(.*)$/)[1]
+       if address =~ /^\d*$/
         @address = address.to_i
-      #end
+       else
+        # This should only create a symbol if it's not referring to 
+        # a label, but we won't know that.  Will need to implement
+        # a first-pass to resolve instruction/label symbols, first
+        # For now, I won't return an address here (unless it's
+        # predefined) I'll still try to set it though, so that if
+        # the symbols is already defined I can just add it in
+
+        # We don't know that this is always data
+        # Labels are getting set to data before the
+        # label is declared an so the symbol's being
+        # returned but the address is never being set
+        # One solution would be to always create or 
+        # overwrite a symbol when it's an instruction,
+        # but that seems messy
+        @symbol = Sym.for address, :data
+        @address = @symbol.address
+       end
     elsif @string =~ /^\(.*\)$/
       @type = :label
-      @symbol = Sym.for @string.match(/^\((.*)\)$/)[1], :label
+      @symbol = Sym.for! @string.match(/^\((.*)\)$/)[1], :instruction, @@current_address
     elsif @string[0..1] == "//" or @string.empty?
+      # This isn't eliminating comments that may be on the
+      # same line as a command. Should probably add that
+      # functionality into def sanitize
       @type = :comment
     else
       @type = :command
       parse_command
-      # @dest = Sym.new @dest unless is_register?
     end
   end
 
@@ -84,7 +104,7 @@ class Instruction
     string.chomp.gsub ' ', ''
   end
 
-  #def is_register?
-  #  !@dest.nil? and @dest.size <= 3 and  @dest.split('').all? {|x| ['M', 'A', 'D'].include? x}
-  #end
+  def next_address!
+    @@current_address += 1 if writable?
+  end
 end

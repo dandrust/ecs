@@ -1,17 +1,23 @@
 module Code
 
- def to_ml
-    case @type
-    when :label
-      # Not implemented
-    when :address
-      translate_address
-    when :command
-      translate_command
+  def to_ml
+    # puts "writing #{self.to_s}"
+    if writable?
+      # puts "writable"
+      # puts "address = #{self.address} before resolving"
+      resolve_address if @address.nil?
+      # puts "address = #{self.address} after writing"
+      send(:"translate_#{@type}")
     end
   end
 
   private
+
+  def resolve_address
+    # puts @symbol.inspect
+    @address = @symbol.address unless @symbol.nil?
+    # puts "address is now set to #{address}"
+  end
 
   def translate_address
     sprintf '%016b', @address

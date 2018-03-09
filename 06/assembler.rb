@@ -21,6 +21,7 @@ class Assembler
       @instructions
         .select(&:writable?)
         .each do |instr|
+          # puts instr.inspect
           file.puts instr.to_ml
       end
     end
@@ -35,6 +36,8 @@ def main
   # Write it!
   asm = Assembler.new ARGV[0]
   asm.parse
+  # puts "Parsed!"
+  # puts Sym.class_variable_get :@@table
   asm.write
 end
 
