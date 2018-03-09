@@ -4,6 +4,32 @@ class Instruction
   include Code
 
   attr_reader :type, :symbol, :address, :comp, :dest, :jump, :string
+  # @type may be:
+  #   :address
+  #   :comment
+  #   :command
+  #   :label
+  #
+  # @symbol is not implemented
+  #
+  # @address is populated when @type is :address
+  #   16-bit reference to memory address
+  #   populated if @type is :command
+  #
+  # @comp corresponds to comp field of c-instruction
+  #   7 bit value
+  #   populated if @type is :command
+  #
+  # @dest corresponds to dest field of c-instruction
+  #   3 bit value
+  #   populated if @type is :command
+  #
+  # @jump corresponds to jump field of c-instruction
+  #   3 bit value
+  #   populated if @type is :command
+  #
+  # @string is hack-language instrution
+  #   that instance represents
 
   def initialize string
     @string = sanitize string
