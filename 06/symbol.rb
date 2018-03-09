@@ -1,5 +1,7 @@
-class Symz
+class Sym
   attr_reader :name, :address, :type
+  @@table = Hash.new
+  @@current_address = 15
 
   PREDEFINED_SYMBOLS = {
     'SP'      => 0,    
@@ -26,7 +28,6 @@ class Symz
     'SCREEN'  => 16384, 
     'KBD'     => 245676 }
 
-  @@current_address = 15
   #Could be a label in the code
   # ex: (LOOP): (this is a declaration)
   #Could be a variable 
@@ -36,17 +37,28 @@ class Symz
   # ex: @i
   #
   # You must also write support for predefined symbols, too!
-  # @type {:instruction, :memory}
-  def initialize name
+  # @type {:instruction, :data}
+  def initialize name, type
     @name = name
+    @type = type
     if predefined?
-      @type = :memory
+      @type = :data
       @address = PREDEFINED_KEYS[@name]
     end
+    add_to_table!
+  end
+  
+  def add_to_table!
+    @@table.merge! :"#{self.name}" => self
+  end
+  
+  def self.for name, type = :instruction
+    return @@table[name.to_sym] ||
+      new(name, type)
   end
 
   def predefined?
-    @name.in? PREDEFINED_SYMBOLS.keys
+    PREDEFINED_SYMBOLS.keys.include? @name
   end
 
   def assign_address

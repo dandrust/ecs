@@ -1,4 +1,6 @@
 require './code'
+require './symbol'
+
 class Instruction
 
   include Code
@@ -40,6 +42,10 @@ class Instruction
     @string
   end
 
+  def writable?
+    ![:comment, :label].include? @type
+  end
+
   def get_type
     # @R0, @INFINITE_LOOP
     if @string[0] == "@"
@@ -54,8 +60,9 @@ class Instruction
         @type = :address
         @address = address.to_i
       #end
-    #elsif @string =~ /^\(.*\)$/
-    
+    elsif @string =~ /^\(.*\)$/
+      @type = :label
+      @symbol = Sym.for @string.match(/^\((.*)\)$/)[1], :label
     elsif @string[0..1] == "//" or @string.empty?
       @type = :comment
     else

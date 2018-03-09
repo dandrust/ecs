@@ -18,9 +18,10 @@ class Assembler
 
   def write
     File.open @file_name.gsub("asm", "hack"), "w" do |file|
-      @instructions.select{ |instr| instr.type != :comment }
-                   .each do |instr|
-        file.puts instr.to_ml
+      @instructions
+        .select(&:writable?)
+        .each do |instr|
+          file.puts instr.to_ml
       end
     end
   end
