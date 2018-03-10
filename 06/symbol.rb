@@ -28,40 +28,42 @@ class Sym
     'SCREEN'  => 16384, 
     'KBD'     => 245676 }
 
-  def initialize name, type, address=nil, options={}
+  Pending = Struct.new :name
+  
+  def self.for! name, address=nil
+    @@table[name.to_sym] ||
+      new(name, address)
+  end
+
+  def self.for name, address=nil
+    @@table[name.to_sym] ||
+      Pending.new(name)
+  end
+
+  def initialize name, address=nil
     @name = name
-    @type = type
-    if type == :data
-      if predefined?
-        @address = PREDEFINED_SYMBOLS[@name]
-      else
-        @address = next_address if options[:assign_address]
-      end
-    else
-      @address = address
-    end
+    assign_address address
     add_to_table!
   end
+
+  private
   
+  def assign_address address
+    if predefined?
+      @address = PREDEFINED_SYMBOLS[@name]
+    elsif address
+      @address = address
+    else
+      @address = next_address
+    end
+  end
+
   def add_to_table!
     @@table.merge! :"#{self.name}" => self
   end
   
-  def self.for! name, type, address=nil
-    self.for name, type, address, assign_address: true
-  end
-
-  def self.for name, type, address=nil, options={}
-    @@table[name.to_sym] ||
-      new(name, type, address, options)
-  end
-
   def predefined?
     PREDEFINED_SYMBOLS.keys.include? @name
-  end
-
-  def assign_address
-    @address = next_address
   end
 
   def next_address

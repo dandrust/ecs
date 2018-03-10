@@ -53,8 +53,6 @@ class Instruction
   end
 
   private
-
-  PendingSym = Struct.new :name
   
   def set_type
     if @string=~ /^@/
@@ -63,11 +61,12 @@ class Instruction
       if address =~ /^\d*$/
         @address = address.to_i 
       else
-        @symbol = PendingSym.new address
+        @symbol = Sym.for address
+        @address = @symbol.address unless @symbol.is_a? Sym::Pending
       end
     elsif @string =~ /^\(.*\)$/
       @type = :label
-      @symbol = Sym.for! @string.match(/^\((.*)\)$/)[1], :instruction, @@current_address
+      @symbol = Sym.for! @string.match(/^\((.*)\)$/)[1], @@current_address
     elsif @string.nil? or @string.empty? or @string =~ /^\/\//
       @type = :comment
     else

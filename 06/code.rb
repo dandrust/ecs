@@ -2,7 +2,7 @@ module Code
 
   def to_ml
     if writable?
-       resolve_address if @type == :address and @symbol.is_a? Instruction::PendingSym
+      resolve_address if @type == :address and @symbol.is_a? Sym::Pending
       send(:"translate_#{@type}")
     end
   end
@@ -10,8 +10,8 @@ module Code
   private
 
   def resolve_address
-    @symbol = Sym.for! @symbol.name, :data
-    @address = @symbol.address unless @symbol.nil?
+    @symbol = Sym.for! @symbol.name
+    @address = @symbol.address
   end
 
   def translate_address
