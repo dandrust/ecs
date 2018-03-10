@@ -39,7 +39,10 @@ class Instruction
   #   that instance represents
 
   def initialize string
+    puts @@current_address
+    puts string
     @string = sanitize string
+    puts @string
     set_type
     next_address!
   end
@@ -54,34 +57,26 @@ class Instruction
 
   private
 
+  PendingSym = Struct.new :name
+  
   def set_type
+    puts "sanity check"
+    puts @string
+    puts @string =~ /^\(.*\)$/
+    puts @string.nil?
     if @string=~ /^@/
       @type = :address
       address = @string.match(/^@(.*)$/)[1]
-       if address =~ /^\d*$/
-        @address = address.to_i
-       else
-        # This should only create a symbol if it's not referring to 
-        # a label, but we won't know that.  Will need to implement
-        # a first-pass to resolve instruction/label symbols, first
-        # For now, I won't return an address here (unless it's
-        # predefined) I'll still try to set it though, so that if
-        # the symbols is already defined I can just add it in
-
-        # We don't know that this is always data
-        # Labels are getting set to data before the
-        # label is declared an so the symbol's being
-        # returned but the address is never being set
-        # One solution would be to always create or 
-        # overwrite a symbol when it's an instruction,
-        # but that seems messy
-        @symbol = Sym.for address, :data
-        @address = @symbol.address
-       end
+      if address =~ /^\d*$/
+        @address = address.to_i 
+      else
+        @symbol = PendingSym.new address
+      end
     elsif @string =~ /^\(.*\)$/
       @type = :label
+      puts "it's a label! instruction counter is at #{@@current_address}"
       @symbol = Sym.for! @string.match(/^\((.*)\)$/)[1], :instruction, @@current_address
-    elsif @string[0..1] == "//" or @string.empty?
+    elsif @string.nil? or @string.empty? or @string =~ /^\/\//
       # This isn't eliminating comments that may be on the
       # same line as a command. Should probably add that
       # functionality into def sanitize
@@ -101,7 +96,15 @@ class Instruction
   end
 
   def sanitize string
-    string.chomp.gsub ' ', ''
+    # Eliminate leading and trailing whitespace
+    # then eliminate whitespace within the line
+    # split off comments that may follow the good stuff
+    # and finally return the good stuff
+    string
+      .chomp
+      .gsub(' ', '')
+      .split('//')
+      .shift
   end
 
   def next_address!

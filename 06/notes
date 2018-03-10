@@ -1,5 +1,0 @@
-Looks like I have support for symbols themselves, but it needs to be extended to include labels like (LOOP)
-  - See Code line 5
-  - See Instruction#get_type line 30
-
-Create SymbolTable singleton class that holds a hash of symbol 
