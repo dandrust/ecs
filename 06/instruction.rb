@@ -39,10 +39,7 @@ class Instruction
   #   that instance represents
 
   def initialize string
-    puts @@current_address
-    puts string
     @string = sanitize string
-    puts @string
     set_type
     next_address!
   end
@@ -60,10 +57,6 @@ class Instruction
   PendingSym = Struct.new :name
   
   def set_type
-    puts "sanity check"
-    puts @string
-    puts @string =~ /^\(.*\)$/
-    puts @string.nil?
     if @string=~ /^@/
       @type = :address
       address = @string.match(/^@(.*)$/)[1]
@@ -74,12 +67,8 @@ class Instruction
       end
     elsif @string =~ /^\(.*\)$/
       @type = :label
-      puts "it's a label! instruction counter is at #{@@current_address}"
       @symbol = Sym.for! @string.match(/^\((.*)\)$/)[1], :instruction, @@current_address
     elsif @string.nil? or @string.empty? or @string =~ /^\/\//
-      # This isn't eliminating comments that may be on the
-      # same line as a command. Should probably add that
-      # functionality into def sanitize
       @type = :comment
     else
       @type = :command
@@ -96,10 +85,6 @@ class Instruction
   end
 
   def sanitize string
-    # Eliminate leading and trailing whitespace
-    # then eliminate whitespace within the line
-    # split off comments that may follow the good stuff
-    # and finally return the good stuff
     string
       .chomp
       .gsub(' ', '')

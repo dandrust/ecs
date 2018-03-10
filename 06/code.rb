@@ -1,13 +1,8 @@
 module Code
 
   def to_ml
-     puts "writing #{self.to_s}"
     if writable?
-       puts "writable:"
-       puts self.inspect
-       puts "address = #{self.address} before resolving"
        resolve_address if @type == :address and @symbol.is_a? Instruction::PendingSym
-       puts "address = #{self.address} after writing"
       send(:"translate_#{@type}")
     end
   end
@@ -15,10 +10,8 @@ module Code
   private
 
   def resolve_address
-    # puts @symbol.inspect
     @symbol = Sym.for! @symbol.name, :data
     @address = @symbol.address unless @symbol.nil?
-    # puts "address is now set to #{address}"
   end
 
   def translate_address
@@ -26,10 +19,6 @@ module Code
   end
 
   def translate_command
-    puts translate_comp
-    puts translate_dest
-    puts translate_jump
-    puts "111#{translate_comp}#{translate_dest}#{translate_jump}"
     "111#{translate_comp}#{translate_dest}#{translate_jump}"
   end
 
@@ -77,7 +66,6 @@ module Code
 
   def translate_comp
     reg = get_register
-    puts "reg is #{reg}"
     c_val = case @comp
     when '0'
       '101010'
@@ -116,8 +104,6 @@ module Code
     when "D|#{reg}", "#{reg}|D"
       '010101'
     end
-    puts "c_val is #{c_val}"
-    puts "#{reg == 'M' ? '1' : '0'}#{c_val}"
     "#{reg == 'M' ? '1' : '0'}#{c_val}"
   end
 
