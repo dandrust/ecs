@@ -28,16 +28,6 @@ class Sym
     'SCREEN'  => 16384, 
     'KBD'     => 245676 }
 
-  #Could be a label in the code
-  # ex: (LOOP): (this is a declaration)
-  #Could be a variable 
-  # ex: i=100 (this is also a declaration)
-  #Could be a pointer (load in a register)
-  # ex: @LOOP (These can't be translated until a delcaration is made)
-  # ex: @i
-  #
-  # You must also write support for predefined symbols, too!
-  # @type {:instruction, :data}
   def initialize name, type, address=nil, options={}
     @name = name
     @type = type
