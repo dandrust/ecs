@@ -14,6 +14,7 @@ class Assembler
         @instructions << Instruction.new(line)
       end
     end
+    self
   end
 
   def write
@@ -24,14 +25,16 @@ class Assembler
           file.puts instr.to_ml
       end
     end
+    self
   end
 
 end
 
 def main
-  asm = Assembler.new ARGV[0]
-  asm.parse
-  asm.write
+  Assembler
+    .new(ARGV[0])
+    .parse
+    .write
 end
 
 main
