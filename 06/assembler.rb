@@ -11,7 +11,7 @@ class Assembler
   def parse
     File.open(@file_name, 'r') do |file|
       while line = file.gets
-        @instructions << Instruction.new(line)
+        @instructions << Instruction.parse(line)
       end
     end
     self

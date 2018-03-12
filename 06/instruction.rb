@@ -5,43 +5,14 @@ class Instruction
 
   include Code
 
-  @@current_address = 0
+  @@current_address = -1
 
-  attr_reader :type, :symbol, :address, :comp, :dest, :jump, :string
-  # @type may be:
-  #   :address (begins with @)
-  #   :comment (begins wil //)
-  #   :label   (surrounded by parenthesis)
-  #   :command
-  #
-  # @symbol is the Sym class representing a label
-  #   or variable in the code. If the hack-language
-  #   instruction includes a symbol, @symbol will
-  #   be preset
-  #
-  # @address is populated when @type is :address
-  #   16-bit reference to memory address
-  #   populated if @type is :command
-  #
-  # @comp corresponds to comp field of c-instruction
-  #   7 bit value
-  #   populated if @type is :command
-  #
-  # @dest corresponds to dest field of c-instruction
-  #   3 bit value
-  #   populated if @type is :command
-  #
-  # @jump corresponds to jump field of c-instruction
-  #   3 bit value
-  #   populated if @type is :command
-  #
-  # @string is hack-language instrution
-  #   that instance represents
-
-  def initialize string
-    @string = sanitize string
-    set_type
-    next_address!
+  attr_reader :string
+  
+  def self.parse string
+    instruction = new_instruction! sanitize(string)
+    next_address! if instruction.writable?
+    instruction
   end
 
   def to_s
@@ -49,41 +20,24 @@ class Instruction
   end
 
   def writable?
-    ![:comment, :label].include? @type
+    !is_a?(Comment) and !is_a?(Label)
   end
 
   private
   
-  def set_type
+  def self.new_instruction! string
     if @string=~ /^@/
-      @type = :address
-      address = @string.match(/^@(.*)$/)[1]
-      if address =~ /^\d*$/
-        @address = address.to_i 
-      else
-        @symbol = Sym.for address
-        @address = @symbol.address unless @symbol.is_a? Sym::Pending
-      end
+      Address.new string
     elsif @string =~ /^\(.*\)$/
-      @type = :label
-      @symbol = Sym.for! @string.match(/^\((.*)\)$/)[1], @@current_address
+      Label.new string
     elsif @string.nil? or @string.empty? or @string =~ /^\/\//
-      @type = :comment
+      Comment.new string
     else
-      @type = :command
-      parse_command
+      Command.new string
     end
   end
 
-  def parse_command
-    @string.match /^([^=]*=)?([^;]*)(;.*)?$/ do 
-      @dest = $1.slice 0..-2 unless $1.nil?
-      @comp = $2 unless $2.nil?
-      @jump = $3.slice 1..-1 unless $3.nil?
-    end
-  end
-
-  def sanitize string
+  def self.sanitize string
     string
       .chomp
       .gsub(' ', '')
@@ -91,7 +45,11 @@ class Instruction
       .shift
   end
 
-  def next_address!
-    @@current_address += 1 if writable?
+  def self.next_address!
+    @@current_address += 1
   end
 end
+require './instruction/command'
+require './instruction/label'
+require './instruction/comment'
+require './instruction/address'
