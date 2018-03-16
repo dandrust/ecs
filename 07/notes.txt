@@ -1,0 +1,25 @@
+push constant 0
+  - put a value in the 'constant' stack
+
+1 recieve an instruction
+2 translate that instruction into assembly code
+3 output that code to a file
+
+1 instruction will accept:
+  - no arguments (arithmetic, return)
+  - one argument (label, if-goto, goto)
+  - two arguments (push, pop)
+
+First step: implement artimetic commands as well as <push constant x> where x is a decimal
+
+Progress:
+ - implemented assembly code that I think will push constants and add
+ - need to write initialize functions to create instructions
+ - would like to
+  - write a simple program
+  - translate instructions in irb one-by-one
+  - put into asm file
+  - run through virtual cpu thing
+  - confirm that code works
+
+
