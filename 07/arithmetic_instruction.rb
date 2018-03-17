@@ -1,13 +1,12 @@
 class ArithmeticInstruction < Instruction
 
-  attr_reader :operation
 
-  def initialize string
-
+  def initialize operation
+    @operation = operation
   end
 
   def to_assembly
-    case @string
+    case @operation
     when :add
       Array.new
         .push("@SP")   # Load address of stack pointer
@@ -28,4 +27,6 @@ class ArithmeticInstruction < Instruction
     when :and
     when :or
     when :not
+    end
   end
+end

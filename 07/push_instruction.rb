@@ -1,7 +1,11 @@
 class PushInstruction < Instruction
   
+  def initialize *args
+    @operation, @segment, @index = *args
+  end
+
   def to_assembly
-    case segment
+    case @segment
     when :constant
       Array.new
         .push("@#{index.to_i}") # Load the constant into the A register
