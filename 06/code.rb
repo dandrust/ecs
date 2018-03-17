@@ -2,8 +2,8 @@ module Code
 
   def to_ml
     if writable?
-      resolve_address if @type == :address and @symbol.is_a? Sym::Pending
-      send(:"translate_#{@type}")
+      resolve_address if is_a?(Instruction::Address) and @symbol.is_a? Sym::Pending
+      send(:"translate_#{class_name}")
     end
   end
 

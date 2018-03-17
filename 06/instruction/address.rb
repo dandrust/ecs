@@ -7,7 +7,7 @@ class Instruction::Address < Instruction
     if raw_address =~ /^\d*$/
       @address = raw_address.to_i 
     else
-      @symbol = Sym.for address
+      @symbol = Sym.for raw_address
       @address = @symbol.address unless @symbol.is_a? Sym::Pending
     end
   end

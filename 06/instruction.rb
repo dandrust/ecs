@@ -5,7 +5,7 @@ class Instruction
 
   include Code
 
-  @@current_address = -1
+  @@current_address = 0
 
   attr_reader :string
   
@@ -26,11 +26,11 @@ class Instruction
   private
   
   def self.new_instruction! string
-    if @string=~ /^@/
+    if string=~ /^@/
       Address.new string
-    elsif @string =~ /^\(.*\)$/
+    elsif string =~ /^\(.*\)$/
       Label.new string
-    elsif @string.nil? or @string.empty? or @string =~ /^\/\//
+    elsif string.nil? or string.empty? or string =~ /^\/\//
       Comment.new string
     else
       Command.new string
@@ -47,6 +47,10 @@ class Instruction
 
   def self.next_address!
     @@current_address += 1
+  end
+
+  def class_name
+    self.class.name.split('::').last.downcase
   end
 end
 require './instruction/command'
