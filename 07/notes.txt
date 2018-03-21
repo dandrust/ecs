@@ -22,4 +22,10 @@ Progress:
   - run through virtual cpu thing
   - confirm that code works
 
+Progress:
+ - Translator works great!
+ - Have reused labels TRUE, FALSE, END. Can't do that
+  - Implement counter to write TRUE-n, FALSE1, something
+  - Have common "functions" for the boolean operations
+    - would need to store a callback address
 
