@@ -1,4 +1,4 @@
-class Instruction::Comment < Instruction
+class Comment < Instruction
   def initialize string
     @string = string
   end
