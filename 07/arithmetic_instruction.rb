@@ -1,5 +1,7 @@
 class Instruction::ArithmeticInstruction < Instruction
 
+  @@jump_counter = 0
+
   def initialize operation
     @operation = operation
   end
@@ -37,6 +39,7 @@ class Instruction::ArithmeticInstruction < Instruction
   end
 
   def boolean_operation
+    @@jump_counter += 1
     "// Start #{@operation}
     // Decrement SP
     @SP
@@ -49,22 +52,20 @@ class Instruction::ArithmeticInstruction < Instruction
     // Compute difference, store in D register
     D=M-D
     // Conditional jump
-    @TRUE
+    @TRUE#{@@jump_counter}
     D;#{jump_condition}
 
     // False condition: Set D=0 for later storage
     D=0
-    @END
+    @END#{@@jump_counter}
     0;JMP
 
     // True condition: Set D=-1 for later storage
-    (TRUE)
+    (TRUE#{@@jump_counter})
     D=-1 
-    @END
-    0;JMP
 
     // Wrap Up: Write result and increment SP
-    (END)
+    (END#{@@jump_counter})
     @SP
     M=M+1  // Increment SP since we have it in A
     A=M-1  // Set A to what SP was before inc.
