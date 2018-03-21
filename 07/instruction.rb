@@ -1,6 +1,11 @@
 class Instruction
+  attr_reader :operation, :segment, :index
+  
+  def writable?
+    !is_a?(Comment)# and !is_a?(Label)
+  end
+
   class << self
-    attr_reader :string, :operation, :segment, :index
 
     def parse string
       resolve_instruction string.chomp.strip
@@ -29,3 +34,4 @@ end
 
 require './push_instruction'
 require './arithmetic_instruction'
+require './comment'

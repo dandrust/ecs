@@ -1,4 +1,4 @@
-class ArithmeticInstruction < Instruction
+class Instruction::ArithmeticInstruction < Instruction
 
   def initialize operation
     @operation = operation
@@ -18,26 +18,26 @@ class ArithmeticInstruction < Instruction
   private
 
   def binary_operation
-    "// Start #{@string}
+    "// Start #{@operation}
     @SP    // Put SP in A register
     AM=M-1 // Put address of 1st argument in A, decrement SP
     D=M    // Put 1st argument in D
     @SP
     A=M-1  // Put address of 2nd argument in A
     M=D#{operation_symbol}M  // Computer, write result to M
-    // End #{@string}"
+    // End #{@operation}"
   end
 
   def unary_operation
-    "// Start #{@string}
+    "// Start #{@operation}
     @SP    // Put SP in A register
     A=M-1  // Put SP value in A and D registers
     M=#{operation_symbol}M    // Computer, write result to M
-    // End #{@string}"
+    // End #{@operation}"
   end
 
   def boolean_operation
-    "// Start #{@string}
+    "// Start #{@operation}
     // Decrement SP
     @SP
     AM=M-1
@@ -48,7 +48,7 @@ class ArithmeticInstruction < Instruction
     AM=M-1
     // Compute difference, store in D register
     D=M-D
-    / Conditional jump
+    // Conditional jump
     @TRUE
     D;#{jump_condition}
 
@@ -69,7 +69,7 @@ class ArithmeticInstruction < Instruction
     M=M+1  // Increment SP since we have it in A
     A=M-1  // Set A to what SP was before inc.
     M=D
-    // End #{@string}"
+    // End #{@operation}"
   end
 
   def operation_symbol
