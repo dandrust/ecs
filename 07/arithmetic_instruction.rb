@@ -26,7 +26,7 @@ class Instruction::ArithmeticInstruction < Instruction
     D=M    // Put 1st argument in D
     @SP
     A=M-1  // Put address of 2nd argument in A
-    M=D#{operation_symbol}M  // Computer, write result to M
+    M=M#{operation_symbol}D  // Computer, write result to M
     // End #{@operation}"
   end
 
