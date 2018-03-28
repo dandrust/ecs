@@ -1,12 +1,5 @@
 class Instruction::PushInstruction < Instruction
   
-  SEGMENT_SYMBOLS = {
-    :local => 'LCL',
-    :argument => 'ARG',
-    :this => 'THIS',
-    :that => 'THAT'
-  }
-
   def initialize *args
     @operation, @segment, @index = *args
   end
@@ -32,8 +25,8 @@ class Instruction::PushInstruction < Instruction
       end_code
     else
       <<-end_code
-      @#{SEGMENT_SYMBOL[segment]}
-      D=A            // Store base address in D
+      @#{Instruction::SEGMENT_SYMBOLS[segment]}
+      D=#{base_address? ? 'M' : 'A' } // Store base address in D 
       @#{index.to_i} // Put index in A register
       D=D+A          // Add index to base address, store in D
       end_code

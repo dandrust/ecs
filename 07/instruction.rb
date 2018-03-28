@@ -1,8 +1,21 @@
 class Instruction
   attr_reader :operation, :segment, :index
   
+  SEGMENT_SYMBOLS = {
+    :local => 'LCL',
+    :argument => 'ARG',
+    :this => 'THIS',
+    :that => 'THAT',
+    :pointer => '3',
+    :temp => '5'
+  }
+
   def writable?
     !is_a?(Comment)# and !is_a?(Label)
+  end
+
+  def base_address?
+    ![:pointer, :temp].include? segment
   end
 
   class << self
@@ -29,9 +42,11 @@ class Instruction
         ArithmeticInstruction.new operation
       end
     end
+    
   end
 end
 
 require './push_instruction'
+require './pop_instruction'
 require './arithmetic_instruction'
 require './comment'
