@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-require './instruction'
+require_relative 'instruction'
 
 class VmTranslator
 

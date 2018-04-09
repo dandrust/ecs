@@ -16,6 +16,7 @@ class Instruction
 
   def base_address?
     ![:pointer, :temp].include? segment
+    # local, argument, this, that
   end
 
   class << self
@@ -38,6 +39,8 @@ class Instruction
       case operation
       when :push
         PushInstruction.new operation, segment, index
+      when :pop
+        PopInstruction.new operation, segment, index
       else
         ArithmeticInstruction.new operation
       end
@@ -46,7 +49,7 @@ class Instruction
   end
 end
 
-require './push_instruction'
-require './pop_instruction'
-require './arithmetic_instruction'
-require './comment'
+require_relative 'push_instruction'
+require_relative 'pop_instruction'
+require_relative 'arithmetic_instruction'
+require_relative 'comment'
