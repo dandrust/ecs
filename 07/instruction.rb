@@ -11,12 +11,22 @@ class Instruction
   }
 
   def writable?
-    !is_a?(Comment)# and !is_a?(Label)
+    !is_a?(Comment)
   end
 
   def base_address?
     ![:pointer, :temp].include? segment
-    # local, argument, this, that
+  end
+
+  def segment_address
+    case segment
+    when :constant
+      index
+    when :pointer, :temp
+      SEGMENT_SYMBOLS[segment] + index
+    else
+      SEGMENT_SYMBOLS[segment]
+    end
   end
 
   class << self

@@ -23,12 +23,18 @@ class Instruction::PushInstruction < Instruction
       @#{index.to_i} // Put contant in A register
       D=A            // Put contant in D register
       end_code
+    when :pointer, :temp
+      <<-end_code
+      @#{Instruction::SEGMENT_SYMBOLS[segment].to_i + index.to_i} // Put contant in A register
+      D=M            // Put value at that address in D
+      end_code
     else
       <<-end_code
       @#{Instruction::SEGMENT_SYMBOLS[segment]}
-      D=#{base_address? ? 'M' : 'A' } // Store base address in D 
+      D=M            // Store base address in D 
       @#{index.to_i} // Put index in A register
-      D=D+A          // Add index to base address, store in D
+      A=D+A          // Add index to base address, store in D
+      D=M
       end_code
     end
   end
