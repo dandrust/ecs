@@ -1,7 +1,7 @@
 class Instruction::PushInstruction < Instruction
   
   def initialize *args
-    @operation, @segment, @index = *args
+    @file_name, @operation, @segment, @index = *args
   end
 
   def to_assembly
@@ -27,6 +27,11 @@ class Instruction::PushInstruction < Instruction
       <<-end_code
       @#{Instruction::SEGMENT_SYMBOLS[segment].to_i + index.to_i} // Put contant in A register
       D=M            // Put value at that address in D
+      end_code
+    when :static
+      <<-end_code
+      @#{sanitize_file_name}.#{index}
+      D=M     // Address of static var is now in D register
       end_code
     else
       <<-end_code

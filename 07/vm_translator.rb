@@ -2,6 +2,7 @@
 require_relative 'instruction'
 
 class VmTranslator
+  attr_reader :file_name
 
   def initialize file_name
     @file_name = file_name
@@ -11,7 +12,7 @@ class VmTranslator
   def parse
     File.open(@file_name, 'r') do |file|
       while line = file.gets
-        @instructions << Instruction.parse(line)
+        @instructions << Instruction.parse(line, self)
       end
     end
     self

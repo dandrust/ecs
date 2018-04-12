@@ -1,7 +1,7 @@
 class Instruction::PopInstruction < Instruction
   
   def initialize *args
-    @operation, @segment, @index = *args
+    @file_name, @operation, @segment, @index = *args
   end
 
   # TODO: Optimize for index = 0, = 1
@@ -14,6 +14,16 @@ class Instruction::PopInstruction < Instruction
       AM=M-1    // Decrement SP, load target address in A
       D=M       // Move value to pop in D register
       @#{Instruction::SEGMENT_SYMBOLS[segment].to_i + index.to_i}   // Load destination pointer address
+      M=D       // Write value to destination
+      // End #{operation} #{segment} #{index}
+      end_code
+    when :static
+      <<-end_code
+      // Start #{operation} #{segment} #{index}
+      @SP       // Point to SP
+      AM=M-1    // Decrement SP, load target address in A
+      D=M       // Move value to pop in D register
+      @#{sanitize_file_name}.#{index}   // Load destination pointer address
       M=D       // Write value to destination
       // End #{operation} #{segment} #{index}
       end_code

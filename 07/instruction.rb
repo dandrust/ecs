@@ -1,5 +1,5 @@
 class Instruction
-  attr_reader :operation, :segment, :index
+  attr_reader :file_name, :operation, :segment, :index
   
   SEGMENT_SYMBOLS = {
     :local => 'LCL',
@@ -29,9 +29,14 @@ class Instruction
     end
   end
 
+  def sanitize_file_name
+    file_name.match(/\.\/(\w*)\.vm/)[1]
+  end
+
   class << self
 
-    def parse string
+    def parse string, translator
+      @file_name = translator.file_name
       resolve_instruction string.chomp.strip
     end
     
@@ -48,9 +53,9 @@ class Instruction
       index     = parsed_instruction[3]
       case operation
       when :push
-        PushInstruction.new operation, segment, index
+        PushInstruction.new @file_name, operation, segment, index
       when :pop
-        PopInstruction.new operation, segment, index
+        PopInstruction.new @file_name, operation, segment, index
       else
         ArithmeticInstruction.new operation
       end
